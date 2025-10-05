@@ -1,0 +1,1 @@
+# bwgame_api_keycloak_adapter
