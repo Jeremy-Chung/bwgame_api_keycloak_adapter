@@ -1,0 +1,11 @@
+{
+  "name": "bw-game-api-keycloak-adapter-bypass",
+  "version": "1.0.0",
+  "description": "Mock Keycloak adapter for bypassing authentication",
+  "main": "index.js",
+  "directories": {
+    "middleware": "middleware",
+    "configs": "configs"
+  },
+  "dependencies": {}
+}
