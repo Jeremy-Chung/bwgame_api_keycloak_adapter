@@ -1,0 +1,12 @@
+{
+    "realm": "master",
+    "url": "http://35.194.250.225:8080/auth",
+    "clientId": "master-website",
+    "credentials":
+    {
+        "secret": "b72c4de3-4bde-4722-b700-dbd6cac9ed6e"
+    },
+    "adminAccount": "admin",
+    "adminPassword": "admin",
+    "fixedRealm":"bw"
+}

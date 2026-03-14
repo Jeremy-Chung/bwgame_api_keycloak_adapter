@@ -1,34 +1,47 @@
 /**
- * Mock check-auth middleware for bypassing Keycloak
- * This authenticates the user and sets user info
+ * Express middleware - Check auth. following by `init` or `check-realm`. it depends
  */
 module.exports = (req, res, next) => {
-    console.log('Check-auth middleware: bypassing Keycloak authentication');
-    
-    // Initialize res.locals if not exists
-    if (!res.locals) {
-        res.locals = {};
+    res.locals.user = {};
+
+    const { authorization = "" } = req.headers || {};
+    const { account } = res.locals.passport;
+    const [prefix, accessToken] = authorization.split(" ");
+    const httpError = new Error("Permission Deny");
+    const { body, query, method } = req;
+    const { accountId } = (method.toLowerCase() === "get" ? query : body);
+    const { playforfun } = req.headers || false;
+    // skip auth , if this user play for fun
+    if (playforfun) {
+        next();
+        return;
     }
-    
-    // Get account ID from various sources
-    const accountId = req.query.accountId || 
-                     req.query.account || 
-                     req.body?.accountId || 
-                     req.body?.account ||
-                     req.headers['x-account-id'] || 
-                     'test-account-123';
-    
-    // Mock user object that would normally come from Keycloak token
-    res.locals.user = {
-        accountId: accountId,
-        sub: accountId, // subject (user ID from JWT)
-        preferred_username: accountId,
-        email: `${accountId}@example.com`,
-        name: accountId,
-        realm: res.locals.realm || 'default'
-    };
-    
-    console.log('Mock authenticated user:', res.locals.user);
-    
-    next();
+
+    httpError.httpCode = 401;
+
+    if ("bearer" === prefix.toLowerCase() && accessToken && account) {
+        account.userInfo(accessToken).then(userInfo => {
+
+            if (!userInfo.active)
+                next(httpError);
+            else {
+                res.locals.user = userInfo;
+                res.locals.user.accessToken = accessToken;
+
+                next();
+            }
+
+        }).catch(err => {
+            console.error(err);
+            next(httpError);
+        });
+    } else if (accountId) {
+        res.locals.user = {
+            accountId,
+        };
+        next();
+    } else {
+        // error
+        next(httpError);
+    }
 };

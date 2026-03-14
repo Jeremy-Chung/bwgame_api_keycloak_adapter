@@ -1,22 +1,53 @@
 /**
- * Mock check-realm middleware for bypassing Keycloak
- * This checks if the realm/licensee is valid
+ * Express middleware - Check realm. following by `init`
  */
+const { Account } = require("passport");
+const fetchClientConfig = require("../mixin/fetch-client-config");
+const kcConfig = require("../configs/keycloak");
+
 module.exports = (req, res, next) => {
-    console.log('Check-realm middleware: bypassing Keycloak realm check');
-    
-    // Initialize res.locals if not exists
-    if (!res.locals) {
-        res.locals = {};
+    const { licensee } = req.params;
+    const { playforfun } = req.headers || false;
+    const { fixedRealm } = kcConfig;
+    // skip auth , if this user play for fun
+    if (playforfun) {
+        next();
+        return;
     }
-    
-    // Set realm from URL parameter or default
-    res.locals.realm = req.params.licensee || req.query.licensee || 'default';
-    
-    console.log(`Realm set to: ${res.locals.realm}`);
-    
-    // In a real implementation, you might validate the realm here
-    // For now, we accept any realm
-    
-    next();
+
+    //if ("default" === licensee) {
+    if ("default" === fixedRealm) {
+        next();
+        return;
+    }
+
+    //fetchClientConfig(licensee).then(clientConfig => {
+    fetchClientConfig(fixedRealm).then(clientConfig => {
+        res.locals.passport.account = new Account(clientConfig);
+
+        next();
+    }).catch(err => {
+        console.error(err);
+        const { statusCode } = err;
+        let message;
+
+        switch (statusCode) {
+            case 401:
+                {
+                    message = "Unauthorized";
+                    break;
+                }
+            case 404:
+            default:
+                {
+                    message = "Not Found";
+                    break;
+                }
+        }
+
+        const passportErr = new Error(message);
+        passportErr.httpCode = statusCode;
+
+        next(passportErr);
+    });
 };

@@ -1,11 +1,36 @@
 {
-  "name": "bw-game-api-keycloak-adapter-bypass",
-  "version": "1.0.0",
-  "description": "Mock Keycloak adapter for bypassing authentication",
+  "name": "bw-game-api-keycloak-adapter",
+  "version": "1.0.3",
+  "description": "",
   "main": "index.js",
-  "directories": {
-    "middleware": "middleware",
-    "configs": "configs"
+  "scripts": {
+    "test": "mocha ./test/**/*.js",
+    "start": "nodemon app.js",
+    "lint": "eslint ./ --cache --ignore-pattern .gitignore",
+    "quiet-lint": "eslint ./ --quiet --cache --ignore-pattern .gitignore",
+    "precommit-msg": "echo 'Pre-commit checks...' && exit 0",
+    "prepush-msg": "echo 'Pre-push checks...' && exit 0"
   },
-  "dependencies": {}
+  "author": "Norman Chen <normanchen@bananawhale.com>",
+  "license": "ISC",
+  "pre-commit": [
+    "precommit-msg",
+    "quiet-lint"
+  ],
+  "pre-push": [
+    "prepush-msg",
+    "lint"
+  ],
+  "dependencies": {
+//    "passport": "git+ssh://git@bitbucket.org:bananawhale/bwsharedmodules_passport.git",
+    "passport": "https://github.com/Jeremy-Chung/bwsharedmodules_passport.git#default",
+    "redis": "^2.8.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.18.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.9.0",
+    "pre-commit": "^1.2.2",
+    "pre-push": "^0.1.1"
+  }
 }
