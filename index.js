@@ -1,10 +1,7 @@
-/**
- * Main entry point for the bypass Keycloak adapter
- */
+const passport = require("passport");
+const kcConfig = require("./configs/keycloak");
+
 module.exports = {
-    middleware: require('./middleware'),
-    configs: require('./configs'),
-    mixin: {
-        fetchClientConfig: require('./mixin/fetch-client-config')
-    }
+    passport,
+    kcConfig,
 };
