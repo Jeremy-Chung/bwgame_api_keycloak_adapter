@@ -22,7 +22,6 @@
     "lint"
   ],
   "dependencies": {
-//    "passport": "git+ssh://git@bitbucket.org:bananawhale/bwsharedmodules_passport.git",
     "passport": "https://github.com/Jeremy-Chung/bwsharedmodules_passport.git#default",
     "redis": "^2.8.0"
   },
